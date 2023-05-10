@@ -5,7 +5,7 @@ export default {
 </script>
 
 <template>
-  <div class="max-w-screen-md mx-auto">
+  <div class="container">
     <h1 class="text-4xl font-bold">Hello World!</h1>
     <p>
       Lorem ipsum dolor sit, amet consectetur adipisicing elit. Commodi eos
