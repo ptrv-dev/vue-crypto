@@ -39,9 +39,7 @@ export default {
       this.tokens = this.tokens.filter((t) => t !== token);
     },
     pricesSubscribe() {
-      const assets = this.tokens.map((tokenData) =>
-        tokenData.name.toLowerCase()
-      );
+      const assets = this.tokens.map((t) => t.id);
 
       if (!assets.length) {
         if (this.socket !== null) this.socket.close();
@@ -55,23 +53,36 @@ export default {
 
       this.socket.onmessage = (msg) => {
         const pricesData = JSON.parse(msg.data); // { ethereum: '1920.56', bitcoin: '27840.12' }
-        Object.entries(pricesData).forEach(([name, price]) => {
-          const currentToken = this.tokens.find(
-            (t) => t.name.toLowerCase() === name.toLowerCase()
-          );
+        Object.entries(pricesData).forEach(([id, price]) => {
+          const currentToken = this.tokens.find((t) => t.id === id);
           if (!currentToken) return;
           currentToken.price = Number(price);
         });
       };
+    },
+    saveToLS() {
+      window.localStorage.setItem(
+        'tokens',
+        JSON.stringify(this.tokens.map((t) => ({ ...t, price: null })))
+      );
+    },
+    loadFromLS() {
+      const localTokens = window.localStorage.getItem('tokens');
+      if (!localTokens) return;
+      this.tokens = JSON.parse(localTokens);
     },
   },
   watch: {
     tokens: {
       handler() {
         this.pricesSubscribe();
+        this.saveToLS();
       },
       deep: true,
     },
+  },
+  mounted() {
+    this.loadFromLS();
   },
 };
 </script>
