@@ -78,8 +78,9 @@ export default {
         >{{ this.tokenSymbol }} / USD</strong
       >
       <div
-        v-for="bar in normalizedGraph"
-        class="bg-slate-700"
+        v-for="(bar, idx) in normalizedGraph"
+        class="bg-slate-700 hover:bg-slate-500"
+        :title="this.data.slice(-this.maxGraphElements)[idx]"
         :style="{ height: `${bar}%`, width: `${this.GRAPH_BAR_WIDTH}px` }"
       ></div>
     </div>
