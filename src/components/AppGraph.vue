@@ -47,7 +47,7 @@ export default {
 
 <template>
   <div class="container flex flex-col">
-    <div class="flex justify-between items-center">
+    <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl">Selected token graphic:</h1>
       <button
         @click="$emit('close')"
