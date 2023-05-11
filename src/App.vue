@@ -19,6 +19,7 @@ export default {
       if (!token) return alert('Incorrect token to add!');
 
       this.tokens.push({
+        id: token.id,
         name: token.name,
         symbol: token.symbol,
         price: null,
