@@ -1,7 +1,11 @@
 <script>
 import { validateTokenQuery } from './api.js';
+
+import AppGraph from './components/AppGraph.vue';
+
 export default {
   name: 'App',
+  components: { AppGraph },
   data() {
     return {
       tokenQuery: '',
@@ -11,23 +15,6 @@ export default {
       graph: [],
       maxGraphElements: null,
     };
-  },
-  computed: {
-    normalizedGraph() {
-      let minValue = Math.min(...this.graph);
-      const maxValue = Math.max(...this.graph);
-      if (minValue === maxValue) minValue = 0;
-      // return this.graph.map(
-      //   (p) => ((p - minValue) * 100) / (maxValue - minValue)
-      // );
-      const start =
-        this.maxGraphElements !== null
-          ? Math.max(0, this.graph.length - this.maxGraphElements)
-          : 0;
-      return this.graph
-        .map((p) => ((p - minValue) / (maxValue - minValue)) * 95 + 5)
-        .slice(start);
-    },
   },
   methods: {
     async addToken() {
@@ -92,15 +79,6 @@ export default {
       if (!localTokens) return;
       this.tokens = JSON.parse(localTokens);
     },
-    calculateMaxGraphElements() {
-      if (!this.$refs.graphRef || !this.$refs.graphBarRef) return;
-      const v = Math.round(
-        this.$refs.graphRef.clientWidth / this.$refs.graphBarRef[0].clientWidth
-      );
-      console.log(v);
-      console.log(this.$refs.graphRef, this.$refs.graphBarRef);
-      this.maxGraphElements = v;
-    },
   },
   watch: {
     tokens: {
@@ -112,13 +90,6 @@ export default {
     },
     selectedToken() {
       this.graph = [];
-    },
-    graph: {
-      handler() {
-        if (this.maxGraphElements) return;
-        this.calculateMaxGraphElements();
-      },
-      deep: true,
     },
   },
   mounted() {
@@ -187,44 +158,10 @@ export default {
   </div>
   <template v-if="selectedToken">
     <hr class="container border-slate-200 my-8" />
-    <div class="container flex flex-col">
-      <div class="flex justify-between items-center">
-        <h1 class="text-2xl">Selected token graphic:</h1>
-        <button
-          @click="selectedToken = null"
-          class="inline-flex ml-auto text-slate-700"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-8 h-8"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-        </button>
-      </div>
-      <div
-        ref="graphRef"
-        class="flex items-end h-64 border-b border-slate-700 gap-[1px] relative"
-      >
-        <strong
-          class="absolute text-8xl opacity-10 top-1/2 -translate-y-1/2 text-center w-full pointer-events-none"
-          >{{ selectedToken.symbol }} / USD</strong
-        >
-        <div
-          v-for="bar in normalizedGraph"
-          ref="graphBarRef"
-          class="w-5 bg-slate-700"
-          :style="{ height: `${bar}%` }"
-        ></div>
-      </div>
-    </div>
+    <app-graph
+      :tokenSymbol="selectedToken.symbol"
+      :data="graph"
+      @close="selectedToken = null"
+    />
   </template>
 </template>
