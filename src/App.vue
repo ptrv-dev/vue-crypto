@@ -8,12 +8,10 @@ export default {
   components: { AppTickerAdd, AppToken, AppGraph },
   data() {
     return {
-      tokenQuery: '',
       tokens: [],
       selectedToken: null,
       socket: null,
       graph: [],
-      maxGraphElements: null,
     };
   },
   methods: {
