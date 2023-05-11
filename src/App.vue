@@ -100,6 +100,7 @@ export default {
       <app-token
         v-for="token in tokens"
         :token="token"
+        :selected="token === selectedToken"
         @click="selectedToken = token"
         @remove="removeToken(token)"
       />

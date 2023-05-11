@@ -6,6 +6,10 @@ export default {
       type: Object,
       required: true,
     },
+    selected: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: {
     click: null,
@@ -17,7 +21,9 @@ export default {
 <template>
   <div
     @click="$emit('click')"
-    class="flex flex-col border-2 border-dashed rounded-2xl border-slate-700 p-4 items-center gap-2 cursor-pointer"
+    :class="`flex flex-col border-2 border-dashed rounded-2xl ${
+      this.selected ? '' : 'border-slate-700'
+    } p-4 items-center gap-2 cursor-pointer`"
   >
     <p class="text-lg">{{ token.symbol }} / USD</p>
     <strong class="text-2xl">
