@@ -17,3 +17,12 @@ export const validateTokenQuery = async (query) => {
     return null;
   }
 };
+
+export const getAllTokens = async () => {
+  try {
+    const { data } = await axios.get(`https://api.coincap.io/v2/assets`);
+    return data.data;
+  } catch (error) {
+    return null;
+  }
+};
