@@ -7,19 +7,23 @@ export default {
       tokenQuery: '',
       tokens: [],
       selectedToken: null,
+      socket: null,
     };
   },
   methods: {
     async addToken() {
       if (!this.tokenQuery)
         return alert('Please enter the token name or symbol');
+
       const token = await validateTokenQuery(this.tokenQuery);
       if (!token) return alert('Incorrect token to add!');
+
       this.tokens.push({
         name: token.name,
         symbol: token.symbol,
-        price: Number(token.priceUsd),
+        price: null,
       });
+
       this.tokenQuery = '';
     },
     removeToken(token) {
@@ -29,8 +33,43 @@ export default {
         )
       )
         return;
+
       if (this.selectedToken === token) this.selectedToken = null;
       this.tokens = this.tokens.filter((t) => t !== token);
+    },
+    pricesSubscribe() {
+      const assets = this.tokens.map((tokenData) =>
+        tokenData.name.toLowerCase()
+      );
+
+      if (!assets.length) {
+        if (this.socket !== null) this.socket.close();
+        return;
+      }
+
+      if (this.socket !== null) this.socket.close();
+      this.socket = new WebSocket(
+        `wss://ws.coincap.io/prices?assets=${assets.join(',')}`
+      );
+
+      this.socket.onmessage = (msg) => {
+        const pricesData = JSON.parse(msg.data); // { ethereum: '1920.56', bitcoin: '27840.12' }
+        Object.entries(pricesData).forEach(([name, price]) => {
+          const currentToken = this.tokens.find(
+            (t) => t.name.toLowerCase() === name.toLowerCase()
+          );
+          if (!currentToken) return;
+          currentToken.price = Number(price);
+        });
+      };
+    },
+  },
+  watch: {
+    tokens: {
+      handler() {
+        this.pricesSubscribe();
+      },
+      deep: true,
     },
   },
 };
@@ -71,14 +110,7 @@ export default {
       >
         <p class="text-lg">{{ tokenData.symbol }} / USD</p>
         <strong class="text-2xl">
-          {{
-            tokenData.price
-              ? tokenData.price.toLocaleString('en-EN', {
-                  style: 'currency',
-                  currency: 'USD',
-                })
-              : '–'
-          }}
+          {{ tokenData.price ? `$${tokenData.price}` : '–' }}
         </strong>
         <button
           @click.stop="removeToken(tokenData)"
