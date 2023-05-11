@@ -22,6 +22,16 @@ export default {
       });
       this.tokenQuery = '';
     },
+    removeToken(token) {
+      if (
+        !window.confirm(
+          `Do you really want to remove ${token.symbol} from your watch list?`
+        )
+      )
+        return;
+      if (this.selectedToken === token) this.selectedToken = null;
+      this.tokens = this.tokens.filter((t) => t !== token);
+    },
   },
 };
 </script>
@@ -71,6 +81,7 @@ export default {
           }}
         </strong>
         <button
+          @click.stop="removeToken(tokenData)"
           class="flex items-center gap-1 opacity-50 hover:opacity-100 outline-none ring-slate-200 focus:ring-2"
         >
           <svg
