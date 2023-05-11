@@ -1,4 +1,5 @@
 <script>
+import { validateTokenQuery } from './api.js';
 export default {
   name: 'App',
   data() {
@@ -8,13 +9,15 @@ export default {
     };
   },
   methods: {
-    addToken() {
+    async addToken() {
       if (!this.tokenQuery)
         return alert('Please enter the token name or symbol');
+      const token = await validateTokenQuery(this.tokenQuery);
+      if (!token) return alert('Incorrect token to add!');
       this.tokens.push({
-        name: '',
-        symbol: this.tokenQuery.toUpperCase(),
-        price: null,
+        name: token.name,
+        symbol: token.symbol,
+        price: Number(token.priceUsd),
       });
       this.tokenQuery = '';
     },
