@@ -6,6 +6,7 @@ export default {
     return {
       tokenQuery: '',
       tokens: [],
+      selectedToken: null,
     };
   },
   methods: {
@@ -55,7 +56,8 @@ export default {
     <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
       <div
         v-for="tokenData in tokens"
-        class="flex flex-col border-2 border-dashed rounded-2xl border-slate-700 p-4 items-center gap-2"
+        @click="selectedToken = tokenData"
+        class="flex flex-col border-2 border-dashed rounded-2xl border-slate-700 p-4 items-center gap-2 cursor-pointer"
       >
         <p class="text-lg">{{ tokenData.symbol }} / USD</p>
         <strong class="text-2xl">
@@ -88,40 +90,45 @@ export default {
       </div>
     </div>
   </div>
-  <hr class="container border-slate-200 my-8" />
-  <div class="container flex flex-col">
-    <div class="flex justify-between items-center">
-      <h1 class="text-2xl">Selected token graphic:</h1>
-      <button class="inline-flex ml-auto text-slate-700">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="w-8 h-8"
+  <template v-if="selectedToken">
+    <hr class="container border-slate-200 my-8" />
+    <div class="container flex flex-col">
+      <div class="flex justify-between items-center">
+        <h1 class="text-2xl">Selected token graphic:</h1>
+        <button
+          @click="selectedToken = null"
+          class="inline-flex ml-auto text-slate-700"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      </button>
-    </div>
-    <div
-      class="flex items-end h-64 border-b border-slate-700 gap-[1px] relative"
-    >
-      <strong
-        class="absolute text-8xl opacity-10 top-1/2 -translate-y-1/2 text-center w-full"
-        >BTC / USD</strong
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-8 h-8"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </button>
+      </div>
+      <div
+        class="flex items-end h-64 border-b border-slate-700 gap-[1px] relative"
       >
-      <div class="h-32 w-5 bg-slate-700"></div>
-      <div class="h-28 w-5 bg-slate-700"></div>
-      <div class="h-36 w-5 bg-slate-700"></div>
-      <div class="h-40 w-5 bg-slate-700"></div>
-      <div class="h-44 w-5 bg-slate-700"></div>
-      <div class="h-32 w-5 bg-slate-700"></div>
+        <strong
+          class="absolute text-8xl opacity-10 top-1/2 -translate-y-1/2 text-center w-full pointer-events-none"
+          >{{ selectedToken.symbol }} / USD</strong
+        >
+        <div class="h-32 w-5 bg-slate-700"></div>
+        <div class="h-28 w-5 bg-slate-700"></div>
+        <div class="h-36 w-5 bg-slate-700"></div>
+        <div class="h-40 w-5 bg-slate-700"></div>
+        <div class="h-44 w-5 bg-slate-700"></div>
+        <div class="h-32 w-5 bg-slate-700"></div>
+      </div>
     </div>
-  </div>
+  </template>
 </template>
