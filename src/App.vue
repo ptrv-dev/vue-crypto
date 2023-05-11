@@ -1,11 +1,10 @@
 <script>
-import { validateTokenQuery } from './api.js';
-
+import AppTickerAdd from './components/AppTickerAdd.vue';
 import AppGraph from './components/AppGraph.vue';
 
 export default {
   name: 'App',
-  components: { AppGraph },
+  components: { AppGraph, AppTickerAdd },
   data() {
     return {
       tokenQuery: '',
@@ -17,21 +16,8 @@ export default {
     };
   },
   methods: {
-    async addToken() {
-      if (!this.tokenQuery)
-        return alert('Please enter the token name or symbol');
-
-      const token = await validateTokenQuery(this.tokenQuery);
-      if (!token) return alert('Incorrect token to add!');
-
-      this.tokens.push({
-        id: token.id,
-        name: token.name,
-        symbol: token.symbol,
-        price: null,
-      });
-
-      this.tokenQuery = '';
+    handleTokenAdd(token) {
+      this.tokens.push(token);
     },
     removeToken(token) {
       if (
@@ -100,21 +86,7 @@ export default {
 
 <template>
   <div class="container mt-4">
-    <div class="inline-flex gap-2">
-      <input
-        v-model="tokenQuery"
-        @keydown.enter="addToken"
-        class="px-4 py-2 rounded-full border border-slate-700 outline-none ring-slate-200 focus:ring-4"
-        type="text"
-        placeholder="Enter token name..."
-      />
-      <button
-        @click="addToken"
-        class="px-8 py-2 rounded-full text-white bg-slate-700 font-bold outline-none ring-slate-200 focus:ring-4"
-      >
-        Add
-      </button>
-    </div>
+    <app-ticker-add :tokens="tokens" @add="handleTokenAdd" />
   </div>
   <hr class="container border-slate-200 my-4" />
   <div class="container">
