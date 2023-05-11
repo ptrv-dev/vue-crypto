@@ -41,6 +41,10 @@ export default {
   },
   mounted() {
     this.calculateMaxGraphElements();
+    window.addEventListener('resize', this.calculateMaxGraphElements);
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.calculateMaxGraphElements);
   },
 };
 </script>
