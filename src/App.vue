@@ -3,6 +3,8 @@ import AppTickerAdd from './components/AppTickerAdd.vue';
 import AppToken from './components/AppToken.vue';
 import AppGraph from './components/AppGraph.vue';
 
+import { pricesSubscribe } from './api';
+
 export default {
   name: 'App',
   components: { AppTickerAdd, AppToken, AppGraph },
@@ -35,29 +37,13 @@ export default {
       this.tokens = [];
       this.selectedToken = null;
     },
-    pricesSubscribe() {
-      const assets = this.tokens.map((t) => t.id);
-
-      if (!assets.length) {
-        if (this.socket !== null) this.socket.close();
-        return;
-      }
-
-      if (this.socket !== null) this.socket.close();
-      this.socket = new WebSocket(
-        `wss://ws.coincap.io/prices?assets=${assets.join(',')}`
-      );
-
-      this.socket.onmessage = (msg) => {
-        const pricesData = JSON.parse(msg.data); // { ethereum: '1920.56', bitcoin: '27840.12' }
-        Object.entries(pricesData).forEach(([id, price]) => {
+    tokensSubscribeToUpdates() {
+      pricesSubscribe(this.tokens, (data) => {
+        Object.entries(data).forEach(([id, price]) => {
           const currentToken = this.tokens.find((t) => t.id === id);
-          if (!currentToken) return;
-          currentToken.price = Number(price);
-          if (this.selectedToken === currentToken)
-            this.graph.push(Number(price));
+          if (currentToken) currentToken.price = price;
         });
-      };
+      });
     },
     saveToLS() {
       window.localStorage.setItem(
@@ -74,7 +60,7 @@ export default {
   watch: {
     tokens: {
       handler() {
-        this.pricesSubscribe();
+        this.tokensSubscribeToUpdates();
         this.saveToLS();
       },
       deep: true,

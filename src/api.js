@@ -26,3 +26,23 @@ export const getAllTokens = async () => {
     return null;
   }
 };
+
+let socket = null;
+export async function pricesSubscribe(tokens, cb) {
+  const assets = tokens.map((t) => t.id);
+
+  if (!assets.length) {
+    if (socket !== null) socket.close();
+    return;
+  }
+
+  if (socket !== null) socket.close();
+  socket = new WebSocket(
+    `wss://ws.coincap.io/prices?assets=${assets.join(',')}`
+  );
+
+  socket.onmessage = (msg) => {
+    const pricesData = JSON.parse(msg.data); // { ethereum: '1920.56', bitcoin: '27840.12' }
+    cb(pricesData);
+  };
+}
