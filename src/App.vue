@@ -40,6 +40,8 @@ export default {
     tokensSubscribeToUpdates() {
       pricesSubscribe(this.tokens, (data) => {
         Object.entries(data).forEach(([id, price]) => {
+          if (this.selectedToken && this.selectedToken.id === id)
+            this.graph.push(price);
           const currentToken = this.tokens.find((t) => t.id === id);
           if (currentToken) currentToken.price = price;
         });
