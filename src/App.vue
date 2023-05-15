@@ -18,7 +18,7 @@ export default {
   },
   methods: {
     handleTokenAdd(token) {
-      this.tokens.push(token);
+      this.tokens = [...this.tokens, token];
     },
     removeToken(token) {
       if (
@@ -58,12 +58,9 @@ export default {
     },
   },
   watch: {
-    tokens: {
-      handler() {
-        this.tokensSubscribeToUpdates();
-        this.saveToLS();
-      },
-      deep: true,
+    tokens() {
+      this.tokensSubscribeToUpdates();
+      this.saveToLS();
     },
     selectedToken() {
       this.graph = [];
