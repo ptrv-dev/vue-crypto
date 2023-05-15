@@ -29,8 +29,24 @@ export const getAllTokens = async () => {
 
 let socket = null;
 export async function pricesSubscribe(tokens, cb) {
-  const assets = tokens.map((t) => t.id);
+  const tokensData = await getAllTokens();
 
+  if (tokensData) {
+    const pricesData = {};
+    tokens.forEach((t) => {
+      const id = t.id;
+      const tokenData = tokensData.find((td) => td.id === id);
+      if (tokenData) {
+        const price = Number(tokenData.priceUsd);
+
+        pricesData[id] =
+          price < 1 ? price.toPrecision(4) : Number(price.toFixed(2));
+      }
+    });
+    cb(pricesData);
+  }
+
+  const assets = tokens.map((t) => t.id);
   if (!assets.length) {
     if (socket !== null) socket.close();
     return;
